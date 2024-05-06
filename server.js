@@ -1,19 +1,27 @@
+const port = 3001
 
 //1.
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios').default;
+const bodyParser = require('body-parser');
 require('dotenv').config();
-
 const moviesData = require("./Movie_Data/data.json");
+const { Client } = require('pg')
+
+
 const apiKey = process.env.API_KEY;
+const DB_URL = process.env.DB_URL;
+const client = new Client(DB_URL)
+
 
 //2.
 const app = express();
 app.use(cors());
-const port = 3000
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-//4.
+//4.routes
 app.get("/", handleHomePage);
 app.get("/favorite", handleFavorite);
 app.get("/handleErrors", handleErrors);
@@ -21,6 +29,8 @@ app.get('/trending', handleTrending);
 app.get("/search", handleSearch);
 app.get('/popular', handlePopular);
 app.get('/topRated', handleTopRated);
+app.post("/addMovie", handleAddMovie);
+app.get("/getMovies", handleGetMovies);
 
 
 
@@ -118,6 +128,31 @@ function handlePopular(req, res) {
         });
 }
 
+function handleAddMovie(req, res) {
+    const { title, release_date, poster_path, overView } = req.body;
+    // let id = 1;
+    let sql = 'INSERT INTO movie(title, release_date, poster_path, overView ) VALUES($1, $2, $3, $4) RETURNING *;'
+    let values = [title, release_date, poster_path, overView];
+    client.query(sql, values).then((result) => {
+        console.log(result.rows);
+        return res.status(201).json(result.rows[0]);
+    }).catch((err) => {
+        res.json(`there was an error:" ${err}`);
+    });
+
+
+}
+
+function handleGetMovies(req, res) {
+
+    let sql = 'SELECT * from movie;'
+    client.query(sql).then((result) => {
+        res.json(result.rows);
+
+    }).catch((err) => {
+        res.json(`there was an error here: ${err}`);
+    });
+}
 
 
 
@@ -127,15 +162,18 @@ function handlePopular(req, res) {
 
 
 //3.
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+client.connect().then(() => {
+
+    app.listen(port, () => {
+        console.log(`app listening on port ${port}`)
+    });
 })
 
-function Movie(id, title, releaseDate, posterPath, overView) {
-    this.id = id;
+function Movie(title, release_date, poster_path, overView) {
+    // this.id = id;
     this.title = title;
-    this.releaseDate = releaseDate;
-    this.posterPath = posterPath;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
     this.overView = overView;
 
 }
