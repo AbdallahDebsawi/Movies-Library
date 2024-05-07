@@ -31,6 +31,9 @@ app.get('/popular', handlePopular);
 app.get('/topRated', handleTopRated);
 app.post("/addMovie", handleAddMovie);
 app.get("/getMovies", handleGetMovies);
+app.get("/getMovieById/:id", handleGetMovieById);
+app.put("/updateMovieById/:id", handleUpdateMovieById)
+app.delete("/deleteMovieById/:id", handleDeleteMovieById)
 
 
 
@@ -154,6 +157,44 @@ function handleGetMovies(req, res) {
     });
 }
 
+
+function handleGetMovieById(req, res) {
+    let { id } = req.params;
+    let sql = 'SELECT * from movie WHERE id=$1;'
+    let value = [id];
+    client.query(sql, value).then((result) => {
+        res.json(result.rows[0]);
+    }).catch(error => {
+        console.log("there was an error", error);
+    });
+}
+
+function handleUpdateMovieById(req, res) {
+    const { id } = req.params;
+    const { title, release_date, poster_path, overView } = req.body;
+
+    let sql = `UPDATE movie SET title = $1, release_date = $2, poster_path = $3, overView = $4 WHERE id = $5 RETURNING *;`
+    let values = [title, release_date, poster_path, overView, id];
+
+    client.query(sql, values).then(result => {
+        res.json(result.rows[0]);
+    }
+
+    ).catch(error => {
+        console.log("there was an error", error);
+    });
+}
+function handleDeleteMovieById(req, res) {
+    const { id } = req.params;
+    let sql = 'DELETE FROM movie WHERE id=$1 RETURNING *;'
+    let value = [id];
+    client.query(sql, value).then(result => {
+        res.send(result.rows[0]);
+    }
+    ).catch(error => {
+        console.log("there was an error", error);
+    })
+}
 
 
 
