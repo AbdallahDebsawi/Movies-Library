@@ -1,5 +1,3 @@
-const PORT = process.env.PORT;
-
 //1.
 const express = require('express');
 const cors = require('cors');
@@ -12,6 +10,8 @@ const { Client } = require('pg')
 
 const apiKey = process.env.API_KEY;
 const DB_URL = process.env.DB_URL;
+const PORT = process.env.PORT || 3001;
+
 const client = new Client(DB_URL)
 
 
