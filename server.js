@@ -9,10 +9,9 @@ const { Client } = require('pg')
 
 
 const apiKey = process.env.API_KEY;
-const DB_URL = process.env.DB_URL;
+const DATABASE_URL = process.env.DATABASE_URL;
 const PORT = process.env.PORT || 3001;
-
-const client = new Client(DB_URL)
+const client = new Client(DATABASE_URL)
 
 
 //2.
