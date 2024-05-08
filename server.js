@@ -206,7 +206,7 @@ function handleDeleteMovieById(req, res) {
 client.connect().then(() => {
 
     app.listen(PORT, () => {
-        console.log(`app listening on port ${PORt}`)
+        console.log(`app listening on port ${PORT}`)
     });
 })
 
