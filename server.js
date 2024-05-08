@@ -1,4 +1,4 @@
-const port = 3001
+const PORT = process.env.PORT;
 
 //1.
 const express = require('express');
@@ -205,8 +205,8 @@ function handleDeleteMovieById(req, res) {
 //3.
 client.connect().then(() => {
 
-    app.listen(port, () => {
-        console.log(`app listening on port ${port}`)
+    app.listen(PORT, () => {
+        console.log(`app listening on port ${PORt}`)
     });
 })
 
